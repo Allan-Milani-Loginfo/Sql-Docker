@@ -18,19 +18,20 @@ services:
       - ./db/data:/var/opt/mssql/data
       - ./db/log:/var/opt/mssql/log
       - ./db/secrets:/var/opt/mssql/secrets
+      - ./db/scripts/:/home/scripts/
     tty: true
   mssqltools:
     build:
       context: .
       dockerfile: Dockerfile.MssqlTools
-    entrypoint: dockerize -wait tcp://sqlserver:1433 -timeout 120s sh /tmp/ini-database.sh
+    # entrypoint: dockerize -wait tcp://sqlserver:1433 -timeout 120s sh /tmp/ini-database.sh
     # image: mcr.microsoft.com/mssql-tools
     # depends_on: 
     #   - sqlserver
     environment:
       SA_PASSWORD: "SqlServerLoginfo2022!"
     tty: true
-    restart: unless-stopped
+    # restart: unless-stopped
     # volumes:
     #   - ./scripts/:/tmp/
     #   - ./ini-database.sh:/tmp/ini-database.sh
