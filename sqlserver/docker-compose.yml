@@ -1,0 +1,37 @@
+version: '3.7'
+
+services: 
+  sqlserver: 
+    container_name: sqlserver
+    hostname: sqlserver
+    build:
+      context: .
+      dockerfile: Dockerfile.SqlServer
+    # image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "SqlServerLoginfo2022!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes: 
+      - ./db/data:/var/opt/mssql/data
+      - ./db/log:/var/opt/mssql/log
+      - ./db/secrets:/var/opt/mssql/secrets
+    tty: true
+  mssqltools:
+    build:
+      context: .
+      dockerfile: Dockerfile.MssqlTools
+    entrypoint: dockerize -wait tcp://sqlserver:1433 -timeout 120s sh /tmp/ini-database.sh
+    # image: mcr.microsoft.com/mssql-tools
+    # depends_on: 
+    #   - sqlserver
+    environment:
+      SA_PASSWORD: "SqlServerLoginfo2022!"
+    tty: true
+    restart: unless-stopped
+    # volumes:
+    #   - ./scripts/:/tmp/
+    #   - ./ini-database.sh:/tmp/ini-database.sh
+    # command: /bin/bash ./tmp/ini-database.sh
